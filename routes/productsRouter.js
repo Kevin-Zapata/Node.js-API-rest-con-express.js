@@ -1,19 +1,10 @@
 const express = require('express');
-const faker = require('faker');
+const ProductsService = require ('./../Services/products.service')
 
 const router = express.Router();
+const service = new ProductsService();
 router.get('/',(req, res) =>{
-  const products = [];
-  const {size} = req.query;
-  const limit = size || 10; // el || seria una condicional si size no tiene nada entonces por defecto le damos 10
-  for (let index = 0; index < limit; index++){
-    products.push({
-      name: faker.commerce.productName(),
-      price: parseInt(faker.commerce.price(), 10),
-      image: faker.image.imageUrl(),
-
-        });
-      }
+ const products = service.find();
         res.json(products);
 
 
@@ -34,17 +25,8 @@ router.get ('/filter', (req,res)=>{ //Aquio con el /filter puesto de esta manera
 // Tener en cuenta si tengo una ruta /products/<cualquiercosa> y antes de eso tengo un /products/:id lo tomara como parametro debe colocar el :id despues del de la ruta especifica para que no pase el error.
 router.get('/:id', (req, res)=>{// Todos los parametros recibidos aqui pasan hacer un string
   const {id}= req.params; // Aqui busca mos identificar el id que viene desde el navegador, en este caso se lo asignamos,aqui recibimos un parametro
-  if (id === '999'){ //Tener en cuenta los ''
-  res.status(404).json({
-   message:"not found"
-});
-} else {
-  res.status(200).json({
-  id,
-  name:'Product 2',
-  price: 2000
-  });
-  }
+  const product = service.findOne(id);
+  res.json(product);
 });
 
 router.get('/categories/:categoryId/products/:productsId', (req, res)=>{ // en esta parte recibimos 2 parametros en una misma url
