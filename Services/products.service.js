@@ -4,7 +4,7 @@ constructor(){ //Esto es un array en memoria
   this.products =[];
   this.generate();
 }
-generate(){
+async generate(){
   const limit =  100; // el || seria una condicional si size no tiene nada entonces por defecto le damos 10
   for (let index = 0; index < limit; index++){
     this.products.push({
@@ -16,7 +16,7 @@ generate(){
         });
       }
 }
-create(data){
+async create(data){
   const newProduct = {
     id:  faker.datatype.uuid(),
     ...data
@@ -25,13 +25,18 @@ create(data){
   return newProduct;
 
 }
-find(){
-  return this.products;
+ find(){
+  return new  Promise ((resolve, reject)=>{
+    setTimeout(()=>{
+      resolve (this.products);
+    }, 5000);
+  })
+
 }
-findOne(id){
+async findOne(id){
 return this.products.find(item =>item.id === id )
 }
-update(id, changes){
+async update(id, changes){
 const index = this.products.findIndex(item =>item.id === id ) //Obtiene la posicion dentro del array
 if(index === -1){
   throw new Error('Product not found');
@@ -44,7 +49,7 @@ this.products[index] ={
 return this.products[index];
 }
 
-deletee(id){
+async deletee(id){
   const index = this.products.findIndex(item =>item.id === id ); //Obtiene la posicion dentro del array
   if(index === -1){ // es menos -1 porque cuando no encuentra dicho ID genera un -1 indicando que es un error
     throw new Error('Product not found')

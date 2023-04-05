@@ -1,10 +1,11 @@
+const { response } = require('express');
 const express = require('express');
 const ProductsService = require ('./../Services/products.service')
 
 const router = express.Router();
 const service = new ProductsService();
-router.get('/',(req, res) =>{
- const products = service.find();
+router.get('/', async (req, res) =>{
+ const products = await service.find();
         res.json(products);
 
 
@@ -23,9 +24,9 @@ router.get ('/filter', (req,res)=>{ //Aquio con el /filter puesto de esta manera
   res.send('Yo soy un filter');
 });
 // Tener en cuenta si tengo una ruta /products/<cualquiercosa> y antes de eso tengo un /products/:id lo tomara como parametro debe colocar el :id despues del de la ruta especifica para que no pase el error.
-router.get('/:id', (req, res)=>{// Todos los parametros recibidos aqui pasan hacer un string
+router.get('/:id', async (req, res)=>{// Todos los parametros recibidos aqui pasan hacer un string
   const {id}= req.params; // Aqui busca mos identificar el id que viene desde el navegador, en este caso se lo asignamos,aqui recibimos un parametro
-  const product = service.findOne(id);
+  const product = await service.findOne(id);
   res.json(product);
 });
 
@@ -42,20 +43,27 @@ router.get('/categories/:categoryId/products/:productsId', (req, res)=>{ // en e
   });
 
 });
-router.post('/', (req, res)=>{
+router.post('/', async (req, res)=>{
   const body = req.body
-  const newProduct = service.create(body);
+  const newProduct = await service.create(body);
   res.status(201).json(newProduct);
 })
-router.patch('/:id', (req, res)=>{
+router.patch('/:id', async (req, res)=>{
+ try {
   const{ id } = req.params;
   const body = req.body;
-  const product = service.update(id, body);
+  const product = await service.update(id, body);
   res.json(product);
+ } catch (error) {
+    res.status(404).json({
+      message: error.message
+    });
+ }
+
 })
-router.delete('/:id', (req, res)=>{
+router.delete('/:id', async (req, res)=>{
   const{ id } = req.params;
-  const rta = service.deletee(id);
+  const rta = await service.deletee(id);
   res.json(rta);
 })
 module.exports = router;
