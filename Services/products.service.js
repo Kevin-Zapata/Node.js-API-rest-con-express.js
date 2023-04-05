@@ -1,6 +1,6 @@
 const faker = require('faker');
 class ProductsService {
-constructor(){
+constructor(){ //Esto es un array en memoria
   this.products =[];
   this.generate();
 }
@@ -16,7 +16,13 @@ generate(){
         });
       }
 }
-create(){
+create(data){
+  const newProduct = {
+    id:  faker.datatype.uuid(),
+    ...data
+  }
+  this.products.push(newProduct);
+  return newProduct;
 
 }
 find(){
@@ -25,12 +31,26 @@ find(){
 findOne(id){
 return this.products.find(item =>item.id === id )
 }
-update(){
-
+update(id, changes){
+const index = this.products.findIndex(item =>item.id === id ) //Obtiene la posicion dentro del array
+if(index === -1){
+  throw new Error('Product not found');
+}
+const product = this.products[index];
+this.products[index] ={
+  ...product,
+  ...changes
+};
+return this.products[index];
 }
 
-deletee(){
-
+deletee(id){
+  const index = this.products.findIndex(item =>item.id === id ); //Obtiene la posicion dentro del array
+  if(index === -1){ // es menos -1 porque cuando no encuentra dicho ID genera un -1 indicando que es un error
+    throw new Error('Product not found')
+  }
+  this.products.splice(index, 1);
+  return{ id };
 }
 }
 module.exports = ProductsService;
